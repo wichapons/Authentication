@@ -33,7 +33,26 @@ router.post('/signup', async function (req, res) {
   res.redirect('/login');
 });
 
-router.post('/login', async function (req, res) {});
+router.post('/login', async function (req, res) {
+  const userData = req.body;
+  const email = userData.email;
+  const password = userData.password;
+
+  const checkExistingUser = await db.getDb().collection('users').findOne({email:email});
+  if (!checkExistingUser){
+    console.log('cannot log in');
+    res.redirect('/login')
+  };
+
+   const IsCorrectPassword = await bcrypt.compare(password,checkExistingUser.password); //check entered password and password that stored in database
+  if (!IsCorrectPassword){
+    console.log('password is not correct');
+    res.redirect('/login')
+  }
+  console.log('user authenticated');
+  res.render('admin')
+
+});
 
 router.get('/admin', function (req, res) {
   res.render('admin');
