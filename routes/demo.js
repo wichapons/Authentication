@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcryptjs')
 
 const db = require('../data/database');
 
@@ -21,10 +22,13 @@ router.post('/signup', async function (req, res) {
   const email = userData.email;
   const confirmEmail = userData['email-confirm']; //could not use userData.email-confirm because there is a dash sign. userData['email-confirm'] =  userData.email-confirm 
   const password = userData.password;
+  const hashedPassword = await bcrypt.hash(password,10)
+  
   const user = {
     email: email,
-    password:password,
+    password:hashedPassword,
   };
+
   await db.getDb().collection('users').insertOne(user);
   res.redirect('/login');
 });
