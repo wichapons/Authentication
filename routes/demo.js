@@ -20,17 +20,31 @@ router.get('/login', function (req, res) {
 router.post('/signup', async function (req, res) {
   const userData = req.body;
   const email = userData.email;
-  const confirmEmail = userData['email-confirm']; //could not use userData.email-confirm because there is a dash sign. userData['email-confirm'] =  userData.email-confirm 
+  const confirmEmail = userData['confirm-email']; //could not use userData.email-confirm because there is a dash sign. userData['email-confirm'] =  userData.email-confirm 
   const password = userData.password;
   const hashedPassword = await bcrypt.hash(password,10)
-  
   const user = {
     email: email,
     password:hashedPassword,
   };
+  
+  const existingEmail = await db.getDb().collection('users').findOne({email:email}) 
+  console.log(email,password,confirmEmail);
 
-  await db.getDb().collection('users').insertOne(user);
-  res.redirect('/login');
+  if (!email||!password||!confirmEmail||email !== confirmEmail){
+    console.log('incorrect input');
+    return res.redirect('/signup')
+  }
+  if (email === existingEmail){
+    console.log('user already existed');
+    return res.redirect('/signup')
+  }else{
+    await db.getDb().collection('users').insertOne(user);
+    res.redirect('/login');
+  }
+
+
+
 });
 
 router.post('/login', async function (req, res) {
