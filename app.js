@@ -12,7 +12,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
-
 app.use(demoRoutes);
 
 app.use(function(error, req, res, next) {
@@ -20,5 +19,8 @@ app.use(function(error, req, res, next) {
 })
 
 db.connectToDatabase().then(function () {
-  app.listen(3000);
+  app.listen(3000)
+})
+  .catch(function (err) {
+  console.error('Failed to connect to database:', err);
 });
