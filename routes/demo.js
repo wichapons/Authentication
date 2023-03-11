@@ -1,7 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs')
 
-
 const db = require('../data/database');
 
 const router = express.Router();
@@ -50,27 +49,33 @@ router.post('/login', async function (req, res) {
   const email = userData.email;
   const password = userData.password;
 
-  const checkExistingUser = await db.getDb().collection('users').findOne({email:email});
-  if (!checkExistingUser){
+  const existingUser = await db.getDb().collection('users').findOne({email:email});
+  if (!existingUser){
     console.log('cannot log in');
     res.redirect('/login')
   };
 
-   const IsCorrectPassword = await bcrypt.compare(password,checkExistingUser.password); //check entered password and password that stored in database
+   const IsCorrectPassword = await bcrypt.compare(password,existingUser.password); //check entered password and password that stored in database
   if (!IsCorrectPassword){
     console.log('password is not correct');
     res.redirect('/login')
   }
 
-  //req.session.user ={
-  //  id:
-  //};
-  console.log('user authenticated');
-  res.render('admin')
+  req.session.user ={
+    id:existingUser._id,
+    email: existingUser.email
+  };
+  req.session.save(()=>{
+    console.log('user authenticated');
+    res.redirect('/admin')
+  });
 
 });
 
 router.get('/admin', function (req, res) {
+  if (!req.session.user){
+    return res.render('401').status(401);
+  }
   res.render('admin');
 });
 
