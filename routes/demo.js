@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs')
 
+
 const db = require('../data/database');
 
 const router = express.Router();
@@ -60,6 +61,10 @@ router.post('/login', async function (req, res) {
     console.log('password is not correct');
     res.redirect('/login')
   }
+
+  //req.session.user ={
+  //  id:
+  //};
   console.log('user authenticated');
   res.render('admin')
 
