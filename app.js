@@ -5,21 +5,25 @@ const mongodbStore = require('connect-mongodb-session');
 
 const db = require('./data/database');
 const demoRoutes = require('./routes/demo');
+const { Cookie } = require('express-session');
 const MongodbStore = mongodbStore(session);
 
 const app = express();
-
-const sessionStore = new MongodbStore({
-  uri: 'mongodb://127.0.0.1:27017',
-  databaseName: 'auth-demo',
-  collection:'sessions'
-});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
+
+const sessionStore = new MongodbStore({
+  uri: 'mongodb://127.0.0.1:27017',
+  databaseName: 'auth-demo',
+  collection:'sessions',
+  cookie:{
+    maxAge: 60*100 //100min expire after login
+  }
+});
 
 app.use(session({
   secret: '#&$(*%&#*($&%&^^@!)&RTSDJFHGJKDHGCGHGjhgfcuis&*%#*@$',
