@@ -114,6 +114,7 @@ router.post('/login', async function (req, res) {
       message: 'Cannot login please check input email or password',
       email: email
       }
+      
       req.session.save(()=>{
         res.redirect('/login')
       });
@@ -123,7 +124,8 @@ router.post('/login', async function (req, res) {
     id:existingUser._id,
     email: existingUser.email
   };
-  
+  req.session.isAuthenticated= true;
+  req.session.isAdmin=true;
   req.session.save(()=>{
     console.log('user authenticated');
     res.redirect('/admin')
